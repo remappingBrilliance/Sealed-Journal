@@ -1,0 +1,38 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Configuration with potential secrets
+appsettings.json
+
+# Keep example config
+!appsettings.example.json
+
+# IDE
+.vs/
+*.vsidx
+*.ide
+
+# Upgrade logs
+UpgradeLog.htm
+
+# Test results
+TestResults/
+
+# NuGet
+packages/
+*.nupkg
+
+# Agent/AI tool instructions
+CLAUDE.md
+AGENTS.md
+.clinerules

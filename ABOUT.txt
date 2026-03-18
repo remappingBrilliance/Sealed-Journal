@@ -1,0 +1,59 @@
+# This file is used at compile time to populate the "About" Box.
+# Change it as you see fit.
+
+Sealed Journal - Secure Encrypted Notepad by Remapping Brilliance
+
+A secure, encrypted notepad application for Windows with daily journaling support.
+
+FEATURES
+
+AES-256 Encryption: All notes are encrypted using AES-256 with PBKDF2 key derivation (100,000 iterations)
+Password Protected: Requires password to access and view notes
+Daily Journal Files: Notes are automatically organized by date (YYYY-MM-DD.txt)
+Global Hotkey: Quick show/hide with configurable keyboard shortcut
+Append-Only Mode: Press Enter to save and clear, keeping previous entries hidden
+Date Stamping: Optional automatic timestamp insertion
+
+SECURITY
+
+Sealed Journal uses industry-standard cryptographic practices:
+- AES-256 symmetric encryption
+- PBKDF2 with SHA-256 for key derivation
+- Random salt (32 bytes) per encryption operation
+- Random IV (16 bytes) per encryption operation
+- 100,000 iterations for key derivation
+
+Each encrypted block contains: [salt][iv][ciphertext] encoded as Base64.
+
+KEYBOARD SHORTCUTS
+
+Enter - Save current text and clear (append-only mode)
+[InsertDateKey] - Insert timestamp at cursor position
+Ctrl+E - Toggle edit/view mode (requires password)
+[Configured Hotkey] - Show/hide window globally
+
+MODES
+
+Append Mode (default): Type text and press Enter to save. Previous content is hidden.
+View Mode: Click "View" button (requires password) to see all content.
+Edit Mode: In View mode, press Ctrl+E to enable editing.
+
+FILE STORAGE
+
+Notes are stored in the configured NotesDirectory (default: notes/):
+- 2025-03-17.txt
+- 2025-03-18.txt
+- etc.
+
+Each file contains one or more Base64-encoded encrypted blocks, one per line.
+
+SECURITY CONSIDERATIONS
+
+Password: Choose a strong password. The encryption is only as secure as your password.
+Memory: The password is held in memory during the session. A memory dump could potentially expose it.
+File Access: The encrypted files are accessible on disk. Ensure proper file system permissions.
+No Recovery: If you forget your password, there is no way to recover your notes.
+
+LICENSE
+
+MIT License
