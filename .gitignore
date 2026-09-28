@@ -36,3 +36,8 @@ packages/
 CLAUDE.md
 AGENTS.md
 .clinerules
+
+# Live secrets - never commit (real values live in .env)
+.env
+.env.*
+!.env.example
