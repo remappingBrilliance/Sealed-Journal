@@ -23,6 +23,7 @@ public class SealedJournalApp : Form
     private CheckBox dateEveryLineChk;
     private Button todayButton;
     private bool isViewMode = false;
+    private bool _pendingTimestamp = false;
     private ComboBox fileDropdown;
     private string password;
     private AppConfig config;
@@ -178,6 +179,7 @@ public class SealedJournalApp : Form
             AutoSize = true,
             Checked = false
         };
+        dateEveryLineChk.CheckedChanged += (s, e) => { if (!dateEveryLineChk.Checked) _pendingTimestamp = false; };
         timestampGroupBox.Controls.Add(dateEveryLineChk);
         buttonPanel.Controls.Add(timestampGroupBox);
 
@@ -230,6 +232,7 @@ public class SealedJournalApp : Form
             AcceptsReturn = true
         };
         textBox.KeyDown += TextBox_KeyDown;
+        textBox.KeyPress += TextBox_KeyPress;
         // With Dock.Top, last-added = topmost. Add in reverse of desired visual order:
         // buttonPanel at bottom, navPanel above it, menuStrip at very top.
         this.Controls.Add(textBox);
@@ -429,10 +432,11 @@ public class SealedJournalApp : Form
         {
             try
             {
-                string encryptedContent = File.ReadAllText(latestFile);
-                if (!string.IsNullOrWhiteSpace(encryptedContent))
+                string[] lines = File.ReadAllLines(latestFile);
+                string? firstBlock = lines.FirstOrDefault(l => !string.IsNullOrWhiteSpace(l));
+                if (firstBlock != null)
                 {
-                    CryptoHelper.Decrypt(encryptedContent, password);
+                    CryptoHelper.Decrypt(firstBlock, password);
                 }
             }
             catch
@@ -461,6 +465,7 @@ public class SealedJournalApp : Form
         UpdateWindowTitle();
         textBox.Text = string.Empty;
         isViewMode = false;
+        _pendingTimestamp = false;
 
         if (File.Exists(filePath))
         {
@@ -546,8 +551,7 @@ public class SealedJournalApp : Form
                     textBox.Select(0, 0);
                     textBox.Focus();
 
-                    if (dateEveryLineChk.Checked)
-                        InsertDate();
+                    _pendingTimestamp = dateEveryLineChk.Checked;
 
                     e.SuppressKeyPress = true;
                 }
@@ -576,6 +580,7 @@ public class SealedJournalApp : Form
         }
         else if (e.KeyCode.ToString().Equals(config.InsertDateKey, StringComparison.OrdinalIgnoreCase))
         {
+            _pendingTimestamp = false;
             InsertDate();
         }
     }
@@ -643,6 +648,17 @@ public class SealedJournalApp : Form
         return currentTime.Length;
     }
 
+    private void TextBox_KeyPress(object? sender, KeyPressEventArgs e)
+    {
+        if (_pendingTimestamp && e.KeyChar >= ' ')
+        {
+            _pendingTimestamp = false;
+            string timestamp = $"[{DateTime.Now:hh:mm:ss tt}] ";
+            textBox.Text = timestamp;
+            textBox.SelectionStart = timestamp.Length;
+        }
+    }
+
     private void PopulateFileDropdown()
     {
         string todayFileName = DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
@@ -683,6 +699,7 @@ public class SealedJournalApp : Form
                 UpdateWindowTitle();
                 textBox.Text = string.Empty;
                 isViewMode = false;
+                _pendingTimestamp = false;
             }
         }
     }
